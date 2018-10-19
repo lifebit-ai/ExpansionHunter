@@ -27,7 +27,10 @@ repeat_specs = Channel
 		.fromPath(params.repeats, type: 'dir' )
 		.ifEmpty { exit 1, "${params.repeats} not found.\nPlease specify --repeats option (--repeats repeatSpecsFolder)"}
 
-if(params.depth) {extraflags = "--read-depth ${params.depth}"}
+if(params.depth) {
+	extraflags = "--read-depth ${params.depth}"
+} else { extraflags = "" }
+
 
 // Header log info
 log.info """=======================================================
