@@ -27,6 +27,7 @@ repeat_specs = Channel
 		.fromPath(params.repeats, type: 'dir' )
 		.ifEmpty { exit 1, "${params.repeats} not found.\nPlease specify --repeats option (--repeats repeatSpecsFolder)"}
 
+if(params.depth) {extraflags = "--read-depth ${params.depth}"}
 
 // Header log info
 log.info """=======================================================
@@ -88,8 +89,7 @@ process expansion_hunter {
 	--repeat-specs ${repeat_specs} \
 	--vcf output.vcf \
 	--json output.json \
-	--log output.log \
-	--read-depth $params.depth
+	--log output.log $extraflags
 	"""
 }
 
