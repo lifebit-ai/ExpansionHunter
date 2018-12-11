@@ -31,6 +31,8 @@ if(params.depth) {
 	extraflags = "--read-depth ${params.depth}"
 } else { extraflags = "" }
 
+params.skip_plot_vcf = false
+
 
 // Header log info
 log.info """=======================================================
@@ -83,6 +85,7 @@ process expansion_hunter {
 
 	output:
 	file('output.*') into results
+	file('*.vcf') into vcf
 
 	script:
 	"""
@@ -95,6 +98,35 @@ process expansion_hunter {
 	--log output.log $extraflags
 	"""
 }
+
+/*
+ * Generate plot from output vcf file
+ */
+process vcf_plot {
+    tag "${bam}.vcf"
+    publishDir "${params.resultdir}", mode: 'copy'
+    container 'lifebitai/vcfr:latest'
+    when:
+    !params.skip_plot_vcf
+
+		input:
+    set file vcf from vcf
+
+		output:
+    file 'Rplots.pdf' into plot
+
+		script:
+    """
+    #!/usr/bin/env Rscript
+
+		library(vcfR)
+    vcf_file <- "${vcf}"
+    vcf <- read.vcfR(vcf_file, verbose = FALSE)
+    plot(vcf)
+    dev.off()
+    """
+}
+
 
 workflow.onComplete {
 	println ( workflow.success ? "\nExpansionHunter is done!" : "Oops .. something went wrong" )
