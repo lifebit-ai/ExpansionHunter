@@ -110,7 +110,7 @@ process vcf_plot {
     !params.skip_plot_vcf
 
 		input:
-    set file vcf from vcf
+    file vcf from vcf
 
 		output:
     file 'Rplots.pdf' into plot
