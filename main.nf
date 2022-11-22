@@ -49,7 +49,7 @@ log.info "========================================="
 process preprocess_bam{
 
   tag "${bam}"
-	container 'lifebitai/samtools'
+	container 'broadinstitute/gatk:4.3.0.0'
 
   input:
   file bam from bam
@@ -60,15 +60,10 @@ process preprocess_bam{
   script:
   """
   mkdir ready
-  [[ `samtools view -H ${bam} | grep '@RG' | wc -l`   > 0 ]] && { mv $bam ready;}|| { picard AddOrReplaceReadGroups \
-  I=${bam} \
-  O=ready/${bam} \
-  RGID=${params.rgid} \
-  RGLB=${params.rglb} \
-  RGPL=${params.rgpl} \
-  RGPU=${params.rgpu} \
-  RGSM=${params.rgsm};}
-  cd ready ;samtools index ${bam};
+  [[ `samtools view -H ${bam} | grep '@RG' | wc -l`   > 0 ]] && { mv $bam ready;}|| { gatk  AddOrReplaceReadGroups \
+	-I ${bam} -O ready/${bam} --RGID ${params.rgid} --RGLB ${params.rglb} --RGPL ${params.rgpl} --RGPU ${params.rgpu} --RGSM ${params.rgsm}; }
+	## Index Bam file
+	cd ready; samtools index ${bam};
   """
 }
 
