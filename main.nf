@@ -68,7 +68,7 @@ process preprocess_bam{
 }
 
 process expansion_hunter {
-	publishDir "${params.outdir}", mode: 'copy'
+	publishDir "${params.outdir}", mode: 'move'
 	container 'lifebitai/expansionhunter'
 
 	input:
